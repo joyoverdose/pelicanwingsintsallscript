@@ -10,7 +10,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 # Функция для вывода цветного текста
 print_status() {
@@ -143,7 +143,7 @@ install_wings() {
 create_systemd_service() {
     print_status "Создание systemd сервиса..."
     
-    cat > /etc/systemd/system/wings.service << EOF
+    cat > /etc/systemd/system/wings.service << 'EOF'
 [Unit]
 Description=Pelican Wings Daemon
 After=docker.service
@@ -179,7 +179,7 @@ setup_config() {
         print_warning "Файл конфигурации не найден"
         print_status "Создание базового файла конфигурации..."
         
-        cat > /etc/pelican/config.yml << EOF
+        cat > /etc/pelican/config.yml << 'EOF'
 debug: false
 uuid: "CHANGEME"
 token_id: "CHANGEME"
@@ -232,15 +232,13 @@ setup_firewall() {
     print_status "Настройка брандмауэра..."
     
     if command -v ufw &> /dev/null; then
-        # UFW (Ubuntu/Debian)
         print_status "Настройка UFW..."
-        ufw allow 8080/tcp  # Wings API
-        ufw allow 2022/tcp  # SFTP
-        ufw allow 25565:25665/tcp  # Игровые порты (примерный диапазон)
+        ufw allow 8080/tcp
+        ufw allow 2022/tcp
+        ufw allow 25565:25665/tcp
         ufw allow 25565:25665/udp
         print_success "Правила UFW добавлены"
     elif command -v firewall-cmd &> /dev/null; then
-        # firewalld (CentOS/RHEL)
         print_status "Настройка firewalld..."
         firewall-cmd --permanent --add-port=8080/tcp
         firewall-cmd --permanent --add-port=2022/tcp
